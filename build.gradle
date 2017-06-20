@@ -2,6 +2,8 @@ group 'evolutionsteerjava'
 version '0.1-SNAPSHOT'
 
 apply plugin: 'java'
+apply plugin: "eclipse"
+apply plugin: "idea"
 
 sourceCompatibility = 1.8
 
@@ -12,7 +14,15 @@ repositories {
 dependencies {
     // https://mvnrepository.com/artifact/org.processing/core
     compile group: 'org.processing', name: 'core', version: '3.0b6'
-    // https://mvnrepository.com/artifact/org.processing/processing-complete
-    compile group: 'org.processing', name: 'processing-complete', version: '3.3.4'
+    // https://mvnrepository.com/artifact/org.jogamp.gluegen/gluegen-rt-main
+    compile group: 'org.jogamp.gluegen', name: 'gluegen-rt-main', version: '2.3.2'
+    // https://mvnrepository.com/artifact/org.jogamp.jogl/jogl-all
+    compile group: 'org.jogamp.jogl', name: 'jogl-all-main', version: '2.3.2'
+    // https://mvnrepository.com/artifact/org.jogamp.jogl/jogl
+
+    // https://mvnrepository.com/artifact/org.jogamp.jogl/newt-main
+    // compile group: 'org.jogamp.jogl', name: 'newt-main', version: '2.3.2'
+    // https://mvnrepository.com/artifact/org.jogamp.jogl/nativewindow-main
+    //compile group: 'org.jogamp.jogl', name: 'nativewindow-main', version: '2.3.2'
 
 }

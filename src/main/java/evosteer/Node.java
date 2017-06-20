@@ -1,5 +1,9 @@
 package evosteer;
 
+import processing.core.PApplet;
+import processing.core.PGraphics;
+import static evosteer.EvolutionSteer.*;
+
 class Node {
   float x, y, z, vx, vy, vz, prevX, prevY, prevZ, pvx, pvy, pvz, m, f;
   boolean safeInput;
@@ -25,7 +29,7 @@ class Node {
     x += vx;
     z += vz;
     float acc = dist(vx,vy,vz,pvx,pvy,pvz);
-    totalNodeNausea += acc*acc*nauseaUnit;
+    APPLET.totalNodeNausea += acc*acc*nauseaUnit;
     pvx = vx;
     pvy = vy;
     pvz = vz;
@@ -150,29 +154,29 @@ class Node {
     return (new Node(x, y, z, 0, 0, 0, m, f));
   }
   Node modifyNode(float mutability, int nodeNum) {
-    float newX = x+r()*0.5*mutability;
-    float newY = y+r()*0.5*mutability;
-    float newZ = z+r()*0.5*mutability;
+    float newX = x+APPLET.r()*0.5f*mutability;
+    float newY = y+APPLET.r()*0.5f*mutability;
+    float newZ = z+APPLET.r()*0.5f*mutability;
     //float newM = m+r()*0.1*mutability;
     //newM = min(max(newM, 0.3), 0.5);
-    float newM = 0.4;
-    float newF = min(max(f+r()*0.1*mutability, 0), 1);
+    float newM = 0.4f;
+    float newF = min(max(f+APPLET.r()*0.1f*mutability, 0), 1);
     Node newNode = new Node(newX, newY, newZ, 0, 0, 0, newM, newF);
     return newNode;//max(m+r()*0.1,0.2),min(max(f+r()*0.1,0),1)
   }
   void drawNode(PGraphics img) {
-    color c = color(0,0,0);
+    int c = APPLET.color(0,0,0);
     if (f <= 0.5) {
-      c = colorLerp(color(255,255,255),color(180,0,255),f*2);
+      c = colorLerp(APPLET.color(255,255,255),APPLET.color(180,0,255),f*2);
     }else{
-      c = colorLerp(color(180,0,255),color(0,0,0),f*2-1);
+      c = colorLerp(APPLET.color(180,0,255),APPLET.color(0,0,0),f*2-1);
     }
     img.fill(c);
     img.noStroke();
     img.lights();
     img.pushMatrix();
     img.translate(x*scaleToFixBug, y*scaleToFixBug,z*scaleToFixBug);
-    img.sphere(m*scaleToFixBug*0.5);
+    img.sphere(m*scaleToFixBug*0.5f);
     img.popMatrix();
     //img.ellipse((ni.x+x)*scaleToFixBug, (ni.y+y)*scaleToFixBug, ni.m*scaleToFixBug, ni.m*scaleToFixBug);
     /*if(ni.f >= 0.5){
@@ -185,7 +189,7 @@ class Node {
     img.text(nf(ni.value,0,2),(ni.x+x)*scaleToFixBug,(ni.y+ni.m*lineY2+y)*scaleToFixBug);
     img.text(operationNames[ni.operation],(ni.x+x)*scaleToFixBug,(ni.y+ni.m*lineY1+y)*scaleToFixBug);*/
   }
-  color colorLerp(color a, color b, float x){
-    return color(red(a)+(red(b)-red(a))*x, green(a)+(green(b)-green(a))*x, blue(a)+(blue(b)-blue(a))*x);
+  int colorLerp(int a, int b, float x){
+    return APPLET.color(APPLET.red(a)+(APPLET.red(b)-APPLET.red(a))*x, APPLET.green(a)+(APPLET.green(b)-APPLET.green(a))*x, APPLET.blue(a)+(APPLET.blue(b)-APPLET.blue(a))*x);
   }
 }
