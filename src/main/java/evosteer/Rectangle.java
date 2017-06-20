@@ -1,3 +1,5 @@
+package evosteer;
+
 class Rectangle {
   float x1, y1, x2, y2;
   Rectangle(float tx1, float ty1, float tx2, float ty2) {

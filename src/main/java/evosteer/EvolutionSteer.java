@@ -1,3 +1,12 @@
+package evosteer;
+
+import processing.core.PApplet;
+import processing.core.PFont;
+import processing.core.PGraphics;
+
+import java.util.ArrayList;
+
+public class EvolutionSteer extends PApplet {
 final float windowSizeMultiplier = 1.4;
 final int SEED = 31; //7;  ;(
 
@@ -1609,4 +1618,5 @@ float getFitness(){
 }
 void setFitness(int i){
   c[i].d = getFitness();
+}
 }

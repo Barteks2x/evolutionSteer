@@ -1,3 +1,9 @@
+package evosteer;
+
+import processing.core.PGraphics;
+
+import java.util.ArrayList;
+
 class Muscle {
   int c1, c2;
   float len;

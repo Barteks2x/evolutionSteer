@@ -1,3 +1,5 @@
+package evosteer;
+
 class Axon{
   final double MUTABILITY_MUTABILITY = 0.7;
   final int mutatePower = 9;

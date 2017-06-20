@@ -1,3 +1,5 @@
+package evosteer;
+
 class Creature {
   ArrayList<Node> n;
   ArrayList<Muscle> m;

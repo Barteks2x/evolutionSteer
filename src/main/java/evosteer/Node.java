@@ -1,3 +1,5 @@
+package evosteer;
+
 class Node {
   float x, y, z, vx, vy, vz, prevX, prevY, prevZ, pvx, pvy, pvz, m, f;
   boolean safeInput;

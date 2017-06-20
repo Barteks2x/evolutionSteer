@@ -1,3 +1,7 @@
+package evosteer;
+
+import java.util.ArrayList;
+
 class Brain {
   float[][] neurons;
   Axon[][][] axons;
