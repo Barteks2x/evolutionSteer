@@ -1,16 +1,33 @@
 package evosteer;
 
+import evosteer.util.Utils;
 import processing.core.PApplet;
 import processing.core.PGraphics;
 import static evosteer.EvolutionSteer.*;
 
-class Node {
-  float x, y, z, vx, vy, vz, prevX, prevY, prevZ, pvx, pvy, pvz, m, f;
+public class Node {
+  private EvolutionState state;
+
+  float x;
+  float y;
+  float z;
+  float vx;
+  float vy;
+  float vz;
+  float prevX;
+  float prevY;
+  float prevZ;
+  float pvx;
+  float pvy;
+  float pvz;
+  float m;
+  float f;
   boolean safeInput;
   float pressure;
-  Node(float tx, float ty, float tz,
+  public Node(EvolutionState state, float tx, float ty, float tz,
   float tvx, float tvy, float tvz,
   float tm, float tf) {
+    this.state = state;
     prevX = x = tx;
     prevY = y = ty;
     prevZ = z = tz;
@@ -29,7 +46,7 @@ class Node {
     x += vx;
     z += vz;
     float acc = dist(vx,vy,vz,pvx,pvy,pvz);
-    APPLET.totalNodeNausea += acc*acc*nauseaUnit;
+    state.totalNodeNausea += acc*acc*nauseaUnit;
     pvx = vx;
     pvy = vy;
     pvz = vz;
@@ -38,9 +55,9 @@ class Node {
     vy += gravity;
   }
   void pressAgainstGround(float groundY){
-    float dif = y-(groundY-m/2);
+    float dif = y-(groundY-m*0.5f);
     pressure += dif*pressureUnit;
-    y = (groundY-m/2);
+    y = (groundY-m*0.5f);
     vy = 0;
     x -= vx*f;
     z -= vz*f;
@@ -69,19 +86,9 @@ class Node {
   }
   void hitWalls(Boolean addToAngular) {
     pressure = 0;
-    float dif = y+m/2;
+    float dif = y+m*0.5f;
     if (dif >= 0 && haveGround) {
       pressAgainstGround(0);
-    }
-    if(y > prevY && hazelStairs >= 0){
-      float bottomPointNow = y+m/2;
-      float bottomPointPrev = prevY+m/2;
-      int levelNow = (int)(ceil(bottomPointNow/hazelStairs));
-      int levelPrev = (int)(ceil(bottomPointPrev/hazelStairs));
-      if(levelNow > levelPrev){
-        float groundLevel = levelPrev*hazelStairs;
-        pressAgainstGround(groundLevel);
-      }
     }
     /*for (int i = 0; i < rects.size(); i++) {
       Rectangle r = rects.get(i);
@@ -151,7 +158,7 @@ class Node {
     prevX = x;
   }
   Node copyNode() {
-    return (new Node(x, y, z, 0, 0, 0, m, f));
+    return (new Node(state, x, y, z, 0, 0, 0, m, f));
   }
   Node modifyNode(float mutability, int nodeNum) {
     float newX = x+APPLET.r()*0.5f*mutability;
@@ -161,7 +168,7 @@ class Node {
     //newM = min(max(newM, 0.3), 0.5);
     float newM = 0.4f;
     float newF = min(max(f+APPLET.r()*0.1f*mutability, 0), 1);
-    Node newNode = new Node(newX, newY, newZ, 0, 0, 0, newM, newF);
+    Node newNode = new Node(state, newX, newY, newZ, 0, 0, 0, newM, newF);
     return newNode;//max(m+r()*0.1,0.2),min(max(f+r()*0.1,0),1)
   }
   void drawNode(PGraphics img) {

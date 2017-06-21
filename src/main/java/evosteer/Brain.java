@@ -1,5 +1,7 @@
 package evosteer;
 
+import evosteer.util.Utils;
+
 import static evosteer.EvolutionSteer.APPLET;
 import static evosteer.EvolutionSteer.AXON_START_MUTABILITY;
 import static evosteer.EvolutionSteer.STARTING_AXON_VARIABILITY;
@@ -12,12 +14,15 @@ import static processing.core.PConstants.RADIUS;
 
 import java.util.ArrayList;
 
-class Brain {
+public class Brain {
   float[][] neurons;
   Axon[][][] axons;
   int BRAIN_WIDTH = 0;
   int BRAIN_HEIGHT = 0;
-  Brain(int bw, int bh, Axon[][][] templateAxons, Boolean haveNeurons, Boolean mutate){ //This is to copy a brain EXACTLY.
+  private EvolutionState state;
+
+  Brain(EvolutionState state, int bw, int bh, Axon[][][] templateAxons, Boolean haveNeurons, Boolean mutate){
+    this.state = state; //This is to copy a brain EXACTLY.
     setUpBasics(bw,bh,haveNeurons);
     axons = new Axon[BRAIN_WIDTH-1][BRAIN_HEIGHT][BRAIN_HEIGHT-1];
     if(mutate){
@@ -38,7 +43,8 @@ class Brain {
       }
     }
   }
-  Brain(int bw, int bh){
+  Brain(EvolutionState state, int bw, int bh){
+    this.state = state;
     setUpBasics(bw,bh,false);
     axons = new Axon[BRAIN_WIDTH-1][BRAIN_HEIGHT][BRAIN_HEIGHT-1];
     for(int x = 0; x < BRAIN_WIDTH-1; x++){
@@ -102,7 +108,7 @@ class Brain {
     ArrayList<Muscle> m = owner.m;
     for(int i = 0; i < n.size(); i++){
       Node ni = n.get(i);
-      neurons[0][i] = dist(ni.x, ni.y, ni.z, APPLET.foodX, APPLET.foodY, APPLET.foodZ);
+      neurons[0][i] = dist(ni.x, ni.y, ni.z, state.foodX, state.foodY, state.foodZ);
     }
     for(int i = 0; i < m.size(); i++){
       Muscle am = m.get(i);
@@ -131,13 +137,13 @@ class Brain {
     return 1.0f/(1.0f+pow(2.71828182846f,-input));
   }
   Brain getUsableCopyOfBrain(){
-    return new Brain(BRAIN_WIDTH,BRAIN_HEIGHT,axons,true,false);
+    return new Brain(state, BRAIN_WIDTH,BRAIN_HEIGHT,axons,true,false);
   }
   Brain copyBrain(){
-    return new Brain(BRAIN_WIDTH,BRAIN_HEIGHT,axons,false,false);
+    return new Brain(state, BRAIN_WIDTH,BRAIN_HEIGHT,axons,false,false);
   }
   Brain copyMutatedBrain(){
-    return new Brain(BRAIN_WIDTH,BRAIN_HEIGHT,axons,false,true);
+    return new Brain(state, BRAIN_WIDTH,BRAIN_HEIGHT,axons,false,true);
   }
   public void drawBrain(float scaleUp, Creature owner){
     ArrayList<Node> n = owner.n;

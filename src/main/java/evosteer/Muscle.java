@@ -16,13 +16,15 @@ import processing.core.PGraphics;
 
 import java.util.ArrayList;
 
-class Muscle {
+public class Muscle {
   int c1, c2;
   float len;
   float rigidity;
   float previousTarget;
   float brainOutput;
-  Muscle(int tc1, int tc2, float tlen, float trigidity) {
+  private EvolutionState state;
+  public Muscle(EvolutionState state, int tc1, int tc2, float tlen, float trigidity) {
+    this.state = state;
     previousTarget = len = tlen;
     c1 = tc1;
     c2 = tc2;
@@ -31,7 +33,7 @@ class Muscle {
   }
   void applyForce(int i, ArrayList<Node> n) {
     float target = previousTarget;
-    if(energyDirection == 1 || APPLET.energy >= 0.0001){
+    if(energyDirection == 1 || state.energy >= 0.0001){
       target = len*toMuscleUsable(brainOutput);
     }else{
       target = len;
@@ -43,19 +45,19 @@ class Muscle {
       float normX = (ni1.x-ni2.x)/distance;
       float normY = (ni1.y-ni2.y)/distance;
       float normZ = (ni1.z-ni2.z)/distance;
-      APPLET.force = min(max(1-(distance/target), -1.7f), 1.7f);
-      ni1.vx += normX*APPLET.force*rigidity/ni1.m;
-      ni1.vy += normY*APPLET.force*rigidity/ni1.m;
-      ni1.vz += normZ*APPLET.force*rigidity/ni1.m;
-      ni2.vx -= normX*APPLET.force*rigidity/ni2.m;
-      ni2.vy -= normY*APPLET.force*rigidity/ni2.m;
-      ni2.vz -= normZ*APPLET.force*rigidity/ni2.m;
-      APPLET.energy = max(APPLET.energy+energyDirection*abs(previousTarget-target)*rigidity*energyUnit,0);
+      state.force = min(max(1-(distance/target), -1.7f), 1.7f);
+      ni1.vx += normX*state.force*rigidity/ni1.m;
+      ni1.vy += normY*state.force*rigidity/ni1.m;
+      ni1.vz += normZ*state.force*rigidity/ni1.m;
+      ni2.vx -= normX*state.force*rigidity/ni2.m;
+      ni2.vy -= normY*state.force*rigidity/ni2.m;
+      ni2.vz -= normZ*state.force*rigidity/ni2.m;
+      state.energy = max(state.energy+energyDirection*abs(previousTarget-target)*rigidity*energyUnit,0);
       previousTarget = target;
     }
   }
   Muscle copyMuscle() {
-    return new Muscle(c1, c2, len, rigidity);
+    return new Muscle(state, c1, c2, len, rigidity);
   }
   Muscle modifyMuscle(int nodeNum, float mutability) {
     int newc1 = c1;
@@ -69,7 +71,7 @@ class Muscle {
     float newR = min(max(rigidity*(1+APPLET.r()*0.9f*mutability),0.015f),0.06f);
     float newLen = min(max(len+APPLET.r()*mutability,0.4f),1.25f);
 
-    return new Muscle(newc1, newc2, newLen, newR);
+    return new Muscle(state, newc1, newc2, newLen, newR);
   }
   void drawMuscle(ArrayList<Node> n, PGraphics img) {
     Node ni1 = n.get(c1);
