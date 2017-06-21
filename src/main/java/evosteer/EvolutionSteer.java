@@ -541,14 +541,7 @@ public class EvolutionSteer extends PApplet {
 
   public void simulateSingleGeneration() {
     long time = -System.nanoTime();
-    for (int i = 0; i < 1000; i++) {
-      state.resetState(creatureArray[i]);
-      for (int s = 0; s < 900; s++) {
-        state.simulateCurrentCreature();
-      }
-      state.setAverages();
-      state.setFitness(creatureArray, i);
-    }
+    ThreadedSimulationRunner.run(creatureArray);
     System.out.println(TimeUnit.NANOSECONDS.toMillis(time+System.nanoTime()));
   }
 
