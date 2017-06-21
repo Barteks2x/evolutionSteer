@@ -1,16 +1,15 @@
 package evosteer;
 
-import evosteer.util.Utils;
+import processing.core.PApplet;
 
-import static evosteer.EvolutionSteer.APPLET;
+import java.util.ArrayList;
+
 import static evosteer.EvolutionSteer.AXON_START_MUTABILITY;
 import static evosteer.EvolutionSteer.STARTING_AXON_VARIABILITY;
+import static evosteer.EvolutionSteer.font;
 import static processing.core.PApplet.*;
 import static processing.core.PConstants.CENTER;
 import static processing.core.PConstants.RADIUS;
-
-import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
 
 public class Brain {
   float[][] neurons;
@@ -144,56 +143,56 @@ public class Brain {
   Brain copyMutatedBrain(){
     return new Brain(state, BRAIN_WIDTH,BRAIN_HEIGHT,axons,false,true);
   }
-  public void drawBrain(float scaleUp, Creature owner){
+  public void drawBrain(PApplet p3d, float scaleUp, Creature owner){
     ArrayList<Node> n = owner.n;
     ArrayList<Muscle> m = owner.m;
     final float neuronSize = 0.4f;
     int abw = BRAIN_WIDTH*2-1;
-    APPLET.noStroke();
-    APPLET.fill(100);
-    APPLET.rect(-neuronSize*2*scaleUp,-neuronSize*2*scaleUp,(abw+neuronSize*2)*scaleUp,(BRAIN_HEIGHT+neuronSize*2)*scaleUp);
-    APPLET.fill(255);
-    APPLET.rect(-neuronSize*3*scaleUp,-neuronSize*scaleUp,neuronSize*scaleUp,n.size()*scaleUp);
-    APPLET.fill(0);
-    APPLET.rect(-neuronSize*3*scaleUp,(n.size()-neuronSize)*scaleUp,neuronSize*scaleUp,m.size()*scaleUp);
-    APPLET.ellipseMode(RADIUS);
-    APPLET.strokeWeight(0.5f);
-    APPLET.textAlign(CENTER);
-    APPLET.textFont(APPLET.font,0.58f*scaleUp);
+    p3d.noStroke();
+    p3d.fill(100);
+    p3d.rect(-neuronSize*2*scaleUp,-neuronSize*2*scaleUp,(abw+neuronSize*2)*scaleUp,(BRAIN_HEIGHT+neuronSize*2)*scaleUp);
+    p3d.fill(255);
+    p3d.rect(-neuronSize*3*scaleUp,-neuronSize*scaleUp,neuronSize*scaleUp,n.size()*scaleUp);
+    p3d.fill(0);
+    p3d.rect(-neuronSize*3*scaleUp,(n.size()-neuronSize)*scaleUp,neuronSize*scaleUp,m.size()*scaleUp);
+    p3d.ellipseMode(RADIUS);
+    p3d.strokeWeight(0.5f);
+    p3d.textAlign(CENTER);
+    p3d.textFont(font,0.58f*scaleUp);
     for(int x = 0; x < BRAIN_WIDTH; x++){
       for(int y = 0; y < BRAIN_HEIGHT; y++){
-        APPLET.noStroke();
+        p3d.noStroke();
         double val = neurons[x][y];
-        APPLET.fill(neuronFillColor(val));
-        APPLET.ellipse(x*2*scaleUp,y*scaleUp,neuronSize*scaleUp,neuronSize*scaleUp);
-        APPLET.fill(neuronTextColor(val));
-        APPLET.text(nf((float)val,0,1),x*2*scaleUp,(y+(neuronSize*0.6f))*scaleUp);
+        p3d.fill(neuronFillColor(p3d, val));
+        p3d.ellipse(x*2*scaleUp,y*scaleUp,neuronSize*scaleUp,neuronSize*scaleUp);
+        p3d.fill(neuronTextColor(p3d, val));
+        p3d.text(nf((float)val,0,1),x*2*scaleUp,(y+(neuronSize*0.6f))*scaleUp);
       }
     }
     for(int x = 0; x < BRAIN_WIDTH-1; x++){
       for(int y = 0; y < BRAIN_HEIGHT; y++){
         for(int z = 0; z < BRAIN_HEIGHT-1; z++){
-          drawAxon(x,y,x+1,z,scaleUp);
+          drawAxon(p3d, x,y,x+1,z,scaleUp);
         }
       }
     }
   }
-  public void drawAxon(int x1, int y1, int x2, int y2, float scaleUp){
-    APPLET.stroke(neuronFillColor(axons.weight(x1, y1, y2)*neurons[x1][y1]));
-    APPLET.line(x1*2*scaleUp,y1*scaleUp,x2*2*scaleUp,y2*scaleUp);
+  public void drawAxon(PApplet p3d, int x1, int y1, int x2, int y2, float scaleUp){
+    p3d.stroke(neuronFillColor(p3d, axons.weight(x1, y1, y2)*neurons[x1][y1]));
+    p3d.line(x1*2*scaleUp,y1*scaleUp,x2*2*scaleUp,y2*scaleUp);
   }
-  public int neuronFillColor(double d){
+  public int neuronFillColor(PApplet p3d, double d){
     if(d >= 0){
-      return APPLET.color(255,255,255,(float)(d*255));
+      return p3d.color(255,255,255,(float)(d*255));
     }else{
-      return APPLET.color(1,1,1,abs((float)(d*255)));
+      return p3d.color(1,1,1,abs((float)(d*255)));
     }
   }
-  public int neuronTextColor(double d){
+  public int neuronTextColor(PApplet p3d, double d){
     if(d >= 0){
-      return APPLET.color(0,0,0);
+      return p3d.color(0,0,0);
     }else{
-      return APPLET.color(255,255,255);
+      return p3d.color(255,255,255);
     }
   }
 }

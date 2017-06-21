@@ -8,16 +8,12 @@ import processing.event.MouseEvent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 public class EvolutionSteer extends PApplet {
-  public static EvolutionSteer APPLET;
   public static final float windowSizeMultiplier = 0.8f;//1.4f;
-  final int SEED = 31; //7;  ;(
-
-  PFont font;
-  // TODO: make it non-global
-  public static ArrayList<Creature> creatureDatabase = new ArrayList<Creature>(0);
+  public static final  int SEED = 31; //7;  ;(
 
   public static final boolean haveGround = true;
   public static final int histBarsPerMeter = 5;
@@ -25,40 +21,17 @@ public class EvolutionSteer extends PApplet {
   public static final String fitnessName = "Chomps";
   public static final float baselineEnergy = 0.0f;
   public static final int energyDirection = 1; // if 1, it'll count up how much energy is used.  if -1, it'll count down from the baseline energy, and when energy hits 0, the creature dies.
-  final static float FRICTION = 4;
-  static final float bigMutationChance = 0.03f;
+  public static final float FRICTION = 4;
+  public static final  float bigMutationChance = 0.03f;
 
   public static float foodAngleChange = 0.0f;
 
-  static final float pressureUnit = 500.0f/2.37f;
-  static final float energyUnit = 20;
-  static final float nauseaUnit = 5;
-  int gensToDo = 0;
+  public static final float pressureUnit = 500.0f/2.37f;
+  public static final float energyUnit = 20;
+  public static final float nauseaUnit = 5;
+
   public static final float postFontSize = 0.96f;
   public static final float scaleToFixBug = 1000;
-
-  float CAMERA_MOVE_SPEED = 0.03f;
-
-  public static int windowWidth = 1280;
-  public static int windowHeight = 720;
-
-  int menu = 0;
-  int gen = -1;
-  public static float sliderX = 1170;
-  int genSelected = 0;
-  public static boolean drag = false;
-
-  int creaturesTested = 0;
-
-  int statusWindow = -4;
-  int prevStatusWindow = -4;
-  public static int overallTimer = 0;
-  boolean miniSimulation = false;
-  int creatureWatching = 0;
-
-  int[] creaturesInPosition = new int[1000];
-
-  private boolean justGotBack = false;
 
   public static final float gravity = 0.006f;//0.007;
   public static final float airFriction = 0.95f;
@@ -69,39 +42,66 @@ public class EvolutionSteer extends PApplet {
   public static final int maxBar = 100;
   public static final int barLen = maxBar-minBar;
 
+  public static final int[] p = {
+          0, 10, 20, 30, 40, 50, 60, 70, 80, 90,
+          100, 200, 300, 400, 500, 600, 700, 800, 900, 910, 920, 930, 940, 950, 960, 970, 980, 990, 999
+  };
+  public static final int BRAIN_WIDTH = 3;
+  public static final float STARTING_AXON_VARIABILITY = 1.0f;
+  public static final float AXON_START_MUTABILITY = 0.0005f;
+  public static final int PATRON_COUNT = 75;
+  public static final float TOTAL_PLEDGED = 183.39f;
+  public static final int[] CREATURES_PER_PATRON = new int[PATRON_COUNT];
+
+
+  public static int windowWidth = 1280;
+  public static int windowHeight = 720;
+
   public static int simulationSpeed;
   public static boolean stepbystep;
   public static boolean stepbystepslow;
-  boolean slowDies;
-  public static final int[] p = {
-    0, 10, 20, 30, 40, 50, 60, 70, 80, 90,
-    100, 200, 300, 400, 500, 600, 700, 800, 900, 910, 920, 930, 940, 950, 960, 970, 980, 990, 999
-  };
-  static final int BRAIN_WIDTH = 3;
-  static final float STARTING_AXON_VARIABILITY = 1.0f;
-  static final float AXON_START_MUTABILITY = 0.0005f;
-  public static String[] patronData;
-  static final int PATRON_COUNT = 75;
-  static final float TOTAL_PLEDGED = 183.39f;
-  static final int[] CREATURES_PER_PATRON = new int[PATRON_COUNT];
+  public static int overallTimer = 0;
 
+  public static float sliderX = 1170;
+  public static boolean drag = false;
+
+  public static String[] patronData;
+
+  public static PFont font;
+  // TODO: make it non-global
+  public static ArrayList<Creature> creatureDatabase = new ArrayList<>(0);
+  public static Creature[] creatureArray = new Creature[1000];
+  public static ArrayList<Creature> creatureList = new ArrayList<>();
+
+  int gensToDo = 0;
+
+  float CAMERA_MOVE_SPEED = 0.03f;
+
+  int menu = 0;
+  int gen = -1;
+
+  int genSelected = 0;
+  int creaturesTested = 0;
+
+  int statusWindow = -4;
+  int prevStatusWindow = -4;
+
+  boolean miniSimulation = false;
+  int creatureWatching = 0;
+
+  int[] creaturesInPosition = new int[1000];
+
+  private boolean justGotBack = false;
+
+  boolean slowDies;
 
   private RenderMain renderMain;
   private RenderMenu renderMenu;
   private EvolutionState state;
 
-
-  float r() {
-    return pow(random(-1, 1), 19);
-  }
-
   static float toMuscleUsable(float f){
     return min(max(f,0.8f),1.2f);
   }
-
-  // TODO: Make it non-global
-  public static Creature[] creatureArray = new Creature[1000];
-  public static ArrayList<Creature> creatureList = new ArrayList<Creature>();
 
   @Override
   public void mouseWheel(MouseEvent event) {
@@ -247,8 +247,6 @@ public class EvolutionSteer extends PApplet {
 
   @Override
   public void setup() {
-    APPLET = this;
-
     String[] prePatronData = loadStrings("PatronReport_2017-06-12.csv");
     patronData = new String[PATRON_COUNT];
     int lineAt = 0;
@@ -292,7 +290,46 @@ public class EvolutionSteer extends PApplet {
         }
       }
     }else if (menu == 2) {
-      renderMenu.renderRandom1000CreaturesMenu();
+      Random rnd = new Random(SEED);
+      for (int y = 0; y < 25; y++) {
+        for (int x = 0; x < 40; x++) {
+          int nodeNum = (int)(random(4, 8));
+          int muscleNum = (int)(random(nodeNum, nodeNum*3));
+          ArrayList<Node> n = new ArrayList<Node>(nodeNum);
+          ArrayList<Muscle> m = new ArrayList<Muscle>(muscleNum);
+          for (int i = 0; i < nodeNum; i++) {
+            n.add(new Node(state, new Random(rnd.nextInt()), random(-1, 1), random(-1, 1), random(-1, 1),
+                    0, 0, 0, 0.4f, random(0, 1))); //replaced all nodes' sizes with 0.4, used to be random(0.1,1), random(0,1)
+          }
+          for (int i = 0; i < muscleNum; i++) {
+            int tc1 = 0;
+            int tc2 = 0;
+            if (i < nodeNum-1) {
+              tc1 = i;
+              tc2 = i+1;
+            } else {
+              tc1 = (int)(random(0, nodeNum));
+              tc2 = tc1;
+              while (tc2 == tc1) {
+                tc2 = (int)(random(0, nodeNum));
+              }
+            }
+            float s = 0.8f;
+            if (i >= 10) {
+              s *= 1.414;
+            }
+            float len = random(0.5f,1.5f);
+            m.add(new Muscle(state, new Random(rnd.nextInt()), tc1, tc2, len, random(0.015f, 0.06f)));
+          }
+          float heartbeat = random(40, 80);
+          creatureArray[y*40+x] = new Creature(state, new Random(rnd.nextInt()), null, y*40+x+1, new ArrayList<Node>(n), new ArrayList<Muscle>(m), 0, true, heartbeat, 1.0f, null, null);
+          creatureArray[y*40+x].checkForOverlap();
+          creatureArray[y*40+x].checkForLoneNodes();
+          creatureArray[y*40+x].toStableConfiguration();
+          creatureArray[y*40+x].moveToCenter();
+        }
+      }
+      renderMenu.renderNew1000CreaturesMenu();
       setMenu(3);
     }else if(menu == 3){
       renderMenu.renderMenu3();

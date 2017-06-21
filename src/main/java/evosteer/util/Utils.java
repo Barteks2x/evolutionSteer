@@ -4,7 +4,9 @@ import evosteer.Creature;
 import processing.core.PApplet;
 
 import java.util.ArrayList;
+import java.util.Random;
 
+import static processing.core.PApplet.pow;
 import static processing.core.PApplet.sq;
 
 public class Utils {
@@ -41,5 +43,13 @@ public class Utils {
 
   public static float inter(int a, int b, float offset) {
     return a+(b-a)*offset;
+  }
+
+  public static float rand(Random r, float min, float max) {
+    return r.nextFloat() * (max-min) + min;
+  }
+
+  public static float r(Random rand) {
+    return pow(rand(rand, -1, 1), 19);
   }
 }

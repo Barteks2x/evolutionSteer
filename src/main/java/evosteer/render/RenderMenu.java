@@ -119,48 +119,7 @@ public class RenderMenu {
     }
   }
 
-  public void renderRandom1000CreaturesMenu() {
-    creatures = 0;
-    for (int y = 0; y < 25; y++) {
-      for (int x = 0; x < 40; x++) {
-        int nodeNum = (int)(p3d.random(4, 8));
-        int muscleNum = (int)(p3d.random(nodeNum, nodeNum*3));
-        ArrayList<Node> n = new ArrayList<Node>(nodeNum);
-        ArrayList<Muscle> m = new ArrayList<Muscle>(muscleNum);
-        for (int i = 0; i < nodeNum; i++) {
-          n.add(new Node(state, p3d.random(-1, 1), p3d.random(-1, 1), p3d.random(-1, 1),
-                  0, 0, 0, 0.4f, p3d.random(0, 1))); //replaced all nodes' sizes with 0.4, used to be random(0.1,1), random(0,1)
-        }
-        for (int i = 0; i < muscleNum; i++) {
-          int tc1 = 0;
-          int tc2 = 0;
-          if (i < nodeNum-1) {
-            tc1 = i;
-            tc2 = i+1;
-          } else {
-            tc1 = (int)(p3d.random(0, nodeNum));
-            tc2 = tc1;
-            while (tc2 == tc1) {
-              tc2 = (int)(p3d.random(0, nodeNum));
-            }
-          }
-          float s = 0.8f;
-          if (i >= 10) {
-            s *= 1.414;
-          }
-          float len = p3d.random(0.5f,1.5f);
-          m.add(new Muscle(state, tc1, tc2, len, p3d.random(0.015f, 0.06f)));
-        }
-        float heartbeat = p3d.random(40, 80);
-        creatureArray[y*40+x] = new Creature(state, null, y*40+x+1, new ArrayList<Node>(n), new ArrayList<Muscle>(m), 0, true, heartbeat, 1.0f, null, null);
-        creatureArray[y*40+x].checkForOverlap();
-        creatureArray[y*40+x].checkForLoneNodes();
-        creatureArray[y*40+x].toStableConfiguration();
-        creatureArray[y*40+x].moveToCenter();
-      }
-    }
-    creatures = 0;
-
+  public void renderNew1000CreaturesMenu() {
     PGraphics screenImage = renderMain.screenImage;
 
     screenImage.beginDraw();

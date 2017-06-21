@@ -501,7 +501,7 @@ public class RenderMain {
     p3d.pushMatrix();
     p3d.translate(x,y,z);
     p3d.scale(size);
-    state.currentCreature.brain.drawBrain(size,state.currentCreature);
+    state.currentCreature.brain.drawBrain(p3d, size,state.currentCreature);
     p3d.popMatrix();
   }
   void drawSkipButton(){

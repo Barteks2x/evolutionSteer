@@ -1,30 +1,34 @@
 package evosteer;
 
-import static evosteer.EvolutionSteer.APPLET;
 import static evosteer.EvolutionSteer.bigMutationChance;
 import static evosteer.EvolutionSteer.energyDirection;
 import static evosteer.EvolutionSteer.energyUnit;
 import static evosteer.EvolutionSteer.scaleToFixBug;
 import static evosteer.EvolutionSteer.toMuscleUsable;
+import static evosteer.util.Utils.rand;
 import static processing.core.PApplet.abs;
 import static processing.core.PApplet.dist;
 import static processing.core.PApplet.max;
 import static processing.core.PApplet.min;
 
+import evosteer.util.Utils;
 import processing.core.PApplet;
 import processing.core.PGraphics;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Muscle {
   int c1, c2;
   float len;
   float rigidity;
+  private Random random;
   float previousTarget;
   float brainOutput;
   private EvolutionState state;
-  public Muscle(EvolutionState state, int tc1, int tc2, float tlen, float trigidity) {
+  public Muscle(EvolutionState state, Random random, int tc1, int tc2, float tlen, float trigidity) {
     this.state = state;
+    this.random = random;
     previousTarget = len = tlen;
     c1 = tc1;
     c2 = tc2;
@@ -57,21 +61,21 @@ public class Muscle {
     }
   }
   Muscle copyMuscle() {
-    return new Muscle(state, c1, c2, len, rigidity);
+    return new Muscle(state, random, c1, c2, len, rigidity);
   }
   Muscle modifyMuscle(int nodeNum, float mutability) {
     int newc1 = c1;
     int newc2 = c2;
-    if(APPLET.random(0,1)<bigMutationChance*mutability){
-      newc1 = (int)(APPLET.random(0,nodeNum));
+    if(rand(random, 0,1)<bigMutationChance*mutability){
+      newc1 = (int)(rand(random, 0,nodeNum));
     }
-    if(APPLET.random(0,1)<bigMutationChance*mutability){
-      newc2 = (int)(APPLET.random(0,nodeNum));
+    if(rand(random, 0,1)<bigMutationChance*mutability){
+      newc2 = (int)(rand(random, 0,nodeNum));
     }
-    float newR = min(max(rigidity*(1+APPLET.r()*0.9f*mutability),0.015f),0.06f);
-    float newLen = min(max(len+APPLET.r()*mutability,0.4f),1.25f);
+    float newR = min(max(rigidity*(1+ Utils.r(random)*0.9f*mutability),0.015f),0.06f);
+    float newLen = min(max(len+Utils.r(random)*mutability,0.4f),1.25f);
 
-    return new Muscle(state, newc1, newc2, newLen, newR);
+    return new Muscle(state, random, newc1, newc2, newLen, newR);
   }
   void drawMuscle(ArrayList<Node> n, PGraphics img) {
     Node ni1 = n.get(c1);
