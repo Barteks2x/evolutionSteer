@@ -8,6 +8,7 @@ import processing.event.MouseEvent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class EvolutionSteer extends PApplet {
   public static EvolutionSteer APPLET;
@@ -17,7 +18,6 @@ public class EvolutionSteer extends PApplet {
   PFont font;
   // TODO: make it non-global
   public static ArrayList<Creature> creatureDatabase = new ArrayList<Creature>(0);
-  ArrayList<Rectangle> rects = new ArrayList<Rectangle>(0);
 
   public static final boolean haveGround = true;
   public static final int histBarsPerMeter = 5;
@@ -27,7 +27,6 @@ public class EvolutionSteer extends PApplet {
   public static final int energyDirection = 1; // if 1, it'll count up how much energy is used.  if -1, it'll count down from the baseline energy, and when energy hits 0, the creature dies.
   final static float FRICTION = 4;
   static final float bigMutationChance = 0.03f;
-  public static final float hazelStairs = -1;
 
   public static float foodAngleChange = 0.0f;
 
@@ -504,6 +503,7 @@ public class EvolutionSteer extends PApplet {
   }
 
   public void simulateSingleGeneration() {
+    long time = -System.nanoTime();
     for (int i = 0; i < 1000; i++) {
       state.resetState(creatureArray[i]);
       for (int s = 0; s < 900; s++) {
@@ -512,6 +512,7 @@ public class EvolutionSteer extends PApplet {
       state.setAverages();
       state.setFitness(creatureArray, i);
     }
+    System.out.println(TimeUnit.NANOSECONDS.toMillis(time+System.nanoTime()));
   }
 
   float getSB(int g){

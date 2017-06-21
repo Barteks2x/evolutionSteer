@@ -180,11 +180,12 @@ public class Node {
     }
     img.fill(c);
     img.noStroke();
-    img.lights();
-    img.pushMatrix();
-    img.translate(x*scaleToFixBug, y*scaleToFixBug,z*scaleToFixBug);
-    img.sphere(m*scaleToFixBug*0.5f);
-    img.popMatrix();
+    //img.lights();
+    //img.pushMatrix();
+    //img.translate(x*scaleToFixBug, y*scaleToFixBug,z*scaleToFixBug);
+    //img.sphere(m*scaleToFixBug*0.5f);
+
+    //img.popMatrix();
     //img.ellipse((ni.x+x)*scaleToFixBug, (ni.y+y)*scaleToFixBug, ni.m*scaleToFixBug, ni.m*scaleToFixBug);
     /*if(ni.f >= 0.5){
       img.fill(255);
