@@ -9,8 +9,6 @@ import java.util.Random;
 import static evosteer.EvolutionSteer.*;
 
 public class Node {
-  private EvolutionState state;
-
   float x;
   float y;
   float z;
@@ -28,10 +26,9 @@ public class Node {
   float f;
   boolean safeInput;
   float pressure;
-  public Node(EvolutionState state, Random random, float tx, float ty, float tz,
+  public Node(Random random, float tx, float ty, float tz,
               float tvx, float tvy, float tvz,
               float tm, float tf) {
-    this.state = state;
     this.random = random;
     prevX = x = tx;
     prevY = y = ty;
@@ -43,15 +40,17 @@ public class Node {
     f = tf;
     pressure = 0;
   }
-  void applyForces() {
+  void applyForces(EvolutionState state) { // state may be null when used for getting stable configuration
     vx *= airFriction;
     vy *= airFriction;
     vz *= airFriction;
     y += vy;
     x += vx;
     z += vz;
-    float acc = dist(vx,vy,vz,pvx,pvy,pvz);
-    state.totalNodeNausea += acc*acc*nauseaUnit;
+    if (state != null) {
+      float acc = dist(vx, vy, vz, pvx, pvy, pvz);
+      state.totalNodeNausea += acc * acc * nauseaUnit;
+    }
     pvx = vx;
     pvy = vy;
     pvz = vz;
@@ -99,7 +98,7 @@ public class Node {
     prevX = x;
   }
   Node copyNode() {
-    return (new Node(state, random, x, y, z, 0, 0, 0, m, f));
+    return (new Node(random, x, y, z, 0, 0, 0, m, f));
   }
   Node modifyNode(float mutability, int nodeNum) {
     float newX = x+Utils.r(random)*0.5f*mutability;
@@ -109,7 +108,7 @@ public class Node {
     //newM = min(max(newM, 0.3), 0.5);
     float newM = 0.4f;
     float newF = min(max(f+Utils.r(random)*0.1f*mutability, 0), 1);
-    Node newNode = new Node(state, random, newX, newY, newZ, 0, 0, 0, newM, newF);
+    Node newNode = new Node(random, newX, newY, newZ, 0, 0, 0, newM, newF);
     return newNode;//max(m+r()*0.1,0.2),min(max(f+r()*0.1,0),1)
   }
   void drawNode(PGraphics img) {

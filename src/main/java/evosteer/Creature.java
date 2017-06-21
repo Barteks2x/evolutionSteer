@@ -17,8 +17,6 @@ import static processing.core.PApplet.sqrt;
 import static processing.core.PConstants.PI;
 
 public class Creature {
-  private EvolutionState state;
-
   public ArrayList<Node> n;
   public ArrayList<Muscle> m;
   public float d;
@@ -31,8 +29,7 @@ public class Creature {
   float[][] foodPositions = new float[100][3];
 
   Random random;
-  public Creature(EvolutionState state, Random rand, int[] tname, int tid, ArrayList<Node> tn, ArrayList<Muscle> tm, float td, boolean talive, float tct, float tmut, Brain newBrain, float[][] tfoodpos) {
-    this.state = state;
+  public Creature(Random rand, int[] tname, int tid, ArrayList<Node> tn, ArrayList<Muscle> tm, float td, boolean talive, float tct, float tmut, Brain newBrain, float[][] tfoodpos) {
     this.random = rand;
     id = tid;
     m = tm;
@@ -44,7 +41,7 @@ public class Creature {
     if(newBrain != null){
       brain = newBrain;
     }else{
-      brain = new Brain(state, BRAIN_WIDTH, getBrainHeight());
+      brain = new Brain(BRAIN_WIDTH, getBrainHeight());
     }
     if(tname == null){
       name = new int[2];//APPLET.getNewCreatureName();
@@ -87,7 +84,7 @@ public class Creature {
     newName[0] = name[0];
     newName[1] = CREATURES_PER_PATRON[name[0]];
     CREATURES_PER_PATRON[name[0]]++;
-    Creature modifiedCreature = new Creature(state, random, newName, id,
+    Creature modifiedCreature = new Creature(random, newName, id,
     newN, newM, 0, true, creatureTimer+Utils.r(random)*16*mutability, min(mutability*rand(random, 0.8f, 1.25f), 2), brain.copyMutatedBrain(),null);
     if (rand(random, 0, 1) < bigMutationChance*mutability || n.size() <= 2) { //Add a node
       modifiedCreature.addRandomNode();
@@ -174,7 +171,7 @@ public class Creature {
     float y = n.get(parentNode).y+vertical*0.5f*distance;
     float z = n.get(parentNode).y+sin(ang1)*0.5f*distance;
     
-    n.add(new Node(state, random, x, y, z, 0, 0, 0, 0.4f, rand(random, 0, 1)));
+    n.add(new Node(random, x, y, z, 0, 0, 0, 0.4f, rand(random, 0, 1)));
     changeBrainStructure(n.size()-1,-1);
     
     int nextClosestNode = 0;
@@ -204,7 +201,7 @@ public class Creature {
     if (tc1 != -1) {
       len = dist(n.get(tc1).x, n.get(tc1).y, n.get(tc2).x, n.get(tc2).y);
     }
-    m.add(new Muscle(state, random, tc1, tc2, len, rand(random, 0.02f, 0.08f)));
+    m.add(new Muscle(random, tc1, tc2, len, rand(random, 0.02f, 0.08f)));
     changeBrainStructure(getBrainHeight()-2,-1);
   }
   void removeRandomNode() {
@@ -254,7 +251,7 @@ public class Creature {
     if(withUsableBrain){
       newBrain = brain.getUsableCopyOfBrain();
     }
-    return new Creature(state, random, name, newID, n2, m2, d, alive, creatureTimer, mutability,newBrain,newFoodPositions);
+    return new Creature(random, name, newID, n2, m2, d, alive, creatureTimer, mutability,newBrain,newFoodPositions);
   }
   public void drawCreature(PGraphics img, Boolean putInFrontOfBack) {
     if(putInFrontOfBack && false){
@@ -281,10 +278,10 @@ public class Creature {
   public void toStableConfiguration() {
     for (int j = 0; j < 200; j++) {
       for (int i = 0; i < m.size(); i++) {
-        m.get(i).applyForce(i, n);
+        m.get(i).applyForce(null, i, n);
       }
       for (int i = 0; i < n.size(); i++) {
-        n.get(i).applyForces();
+        n.get(i).applyForces(null);
       }
     }
     for (int i = 0; i < n.size(); i++) {
@@ -292,15 +289,15 @@ public class Creature {
       n.get(i).vy = 0;
     }
   }
-  void simulate() {
-    brain.useBrain(this);
+  void simulate(EvolutionState state) {
+    brain.useBrain(state, this);
     for (int i = 0; i < m.size(); i++) {
-      m.get(i).applyForce(i, n);
+      m.get(i).applyForce(state, i, n);
     }
     for (int i = 0; i < n.size(); i++) {
       Node ni = n.get(i);
       ni.applyGravity();
-      ni.applyForces();
+      ni.applyForces(state);
       ni.hitWalls((i >= 2));
       float distFromFood = dist(ni.x,ni.y,ni.z,state.foodX,state.foodY,state.foodZ);
       if(distFromFood <= 0.4){

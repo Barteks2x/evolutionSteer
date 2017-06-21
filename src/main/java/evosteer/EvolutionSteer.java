@@ -291,7 +291,7 @@ public class EvolutionSteer extends PApplet {
           ArrayList<Node> n = new ArrayList<Node>(nodeNum);
           ArrayList<Muscle> m = new ArrayList<Muscle>(muscleNum);
           for (int i = 0; i < nodeNum; i++) {
-            n.add(new Node(state, new Random(rnd.nextInt()), random(-1, 1), random(-1, 1), random(-1, 1),
+            n.add(new Node(new Random(rnd.nextInt()), random(-1, 1), random(-1, 1), random(-1, 1),
                     0, 0, 0, 0.4f, random(0, 1))); //replaced all nodes' sizes with 0.4, used to be random(0.1,1), random(0,1)
           }
           for (int i = 0; i < muscleNum; i++) {
@@ -308,10 +308,10 @@ public class EvolutionSteer extends PApplet {
               }
             }
             float len = random(0.5f,1.5f);
-            m.add(new Muscle(state, new Random(rnd.nextInt()), tc1, tc2, len, random(0.015f, 0.06f)));
+            m.add(new Muscle(new Random(rnd.nextInt()), tc1, tc2, len, random(0.015f, 0.06f)));
           }
           float heartbeat = random(40, 80);
-          creatureArray[y*40+x] = new Creature(state, new Random(rnd.nextInt()), null, y*40+x+1, new ArrayList<Node>(n), new ArrayList<Muscle>(m), 0, true, heartbeat, 1.0f, null, null);
+          creatureArray[y*40+x] = new Creature(new Random(rnd.nextInt()), null, y*40+x+1, new ArrayList<Node>(n), new ArrayList<Muscle>(m), 0, true, heartbeat, 1.0f, null, null);
           creatureArray[y*40+x].checkForOverlap();
           creatureArray[y*40+x].checkForLoneNodes();
           creatureArray[y*40+x].toStableConfiguration();

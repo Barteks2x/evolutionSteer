@@ -18,7 +18,6 @@ public class EvolutionState {
   public float foodAngle = 0;
   public int chomps = 0;
   public int timer = 0;
-  public float force;
   public float averageX;
   public float averageY;
   public float averageZ;
@@ -157,7 +156,7 @@ public class EvolutionState {
   }
 
   public void simulateCurrentCreature(){
-    currentCreature.simulate();
+    currentCreature.simulate(this);
     averageNodeNausea = totalNodeNausea/currentCreature.n.size();
     simulationTimer++;
     timer++;

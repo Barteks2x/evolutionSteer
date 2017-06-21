@@ -16,10 +16,9 @@ public class Brain {
   AxonArray axons;
   int BRAIN_WIDTH = 0;
   int BRAIN_HEIGHT = 0;
-  private EvolutionState state;
 
-  Brain(EvolutionState state, int bw, int bh, AxonArray templateAxons, Boolean haveNeurons, Boolean mutate){
-    this.state = state; //This is to copy a brain EXACTLY.
+  Brain(int bw, int bh, AxonArray templateAxons, Boolean haveNeurons, Boolean mutate){
+    //This is to copy a brain EXACTLY.
     setUpBasics(bw,bh,haveNeurons);
     axons = new AxonArray(BRAIN_WIDTH - 1, BRAIN_HEIGHT, BRAIN_HEIGHT - 1);//[BRAIN_WIDTH-1][BRAIN_HEIGHT][BRAIN_HEIGHT-1];
     if(mutate){
@@ -35,8 +34,7 @@ public class Brain {
     }
     axons.setDone();
   }
-  Brain(EvolutionState state, int bw, int bh){
-    this.state = state;
+  Brain(int bw, int bh){
     setUpBasics(bw,bh,false);
     axons = new AxonArray(BRAIN_WIDTH - 1, BRAIN_HEIGHT, BRAIN_HEIGHT - 1);//[BRAIN_WIDTH-1][BRAIN_HEIGHT][BRAIN_HEIGHT-1];
     for(int x = 0; x < BRAIN_WIDTH-1; x++){
@@ -95,7 +93,7 @@ public class Brain {
       neurons = null;
     }
   }
-  public void useBrain(Creature owner){
+  public void useBrain(EvolutionState state, Creature owner){
     //long time = -System.nanoTime();
     ArrayList<Node> n = owner.n;
     ArrayList<Muscle> m = owner.m;
@@ -135,13 +133,13 @@ public class Brain {
     return 0.5f*input/(1.0f+abs(input)) + 0.5f;
   }
   Brain getUsableCopyOfBrain(){
-    return new Brain(state, BRAIN_WIDTH,BRAIN_HEIGHT,axons,true,false);
+    return new Brain(BRAIN_WIDTH,BRAIN_HEIGHT,axons,true,false);
   }
   Brain copyBrain(){
-    return new Brain(state, BRAIN_WIDTH,BRAIN_HEIGHT,axons,false,false);
+    return new Brain(BRAIN_WIDTH,BRAIN_HEIGHT,axons,false,false);
   }
   Brain copyMutatedBrain(){
-    return new Brain(state, BRAIN_WIDTH,BRAIN_HEIGHT,axons,false,true);
+    return new Brain(BRAIN_WIDTH,BRAIN_HEIGHT,axons,false,true);
   }
   public void drawBrain(PApplet p3d, float scaleUp, Creature owner){
     ArrayList<Node> n = owner.n;

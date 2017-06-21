@@ -25,9 +25,8 @@ public class Muscle {
   private Random random;
   float previousTarget;
   float brainOutput;
-  private EvolutionState state;
-  public Muscle(EvolutionState state, Random random, int tc1, int tc2, float tlen, float trigidity) {
-    this.state = state;
+
+  public Muscle(Random random, int tc1, int tc2, float tlen, float trigidity) {
     this.random = random;
     previousTarget = len = tlen;
     c1 = tc1;
@@ -35,9 +34,10 @@ public class Muscle {
     rigidity = trigidity;
     brainOutput = 1;
   }
-  void applyForce(int i, ArrayList<Node> n) {
-    float target = previousTarget;
-    if(energyDirection == 1 || state.energy >= 0.0001){
+  // when state is null, this is only used to get stable configuation
+  void applyForce(EvolutionState state, int i, ArrayList<Node> n) {
+    float target;
+    if(energyDirection == 1 || (state == null || state.energy >= 0.0001)){
       target = len*toMuscleUsable(brainOutput);
     }else{
       target = len;
@@ -49,19 +49,21 @@ public class Muscle {
       float normX = (ni1.x-ni2.x)/distance;
       float normY = (ni1.y-ni2.y)/distance;
       float normZ = (ni1.z-ni2.z)/distance;
-      state.force = min(max(1-(distance/target), -1.7f), 1.7f);
-      ni1.vx += normX*state.force*rigidity/ni1.m;
-      ni1.vy += normY*state.force*rigidity/ni1.m;
-      ni1.vz += normZ*state.force*rigidity/ni1.m;
-      ni2.vx -= normX*state.force*rigidity/ni2.m;
-      ni2.vy -= normY*state.force*rigidity/ni2.m;
-      ni2.vz -= normZ*state.force*rigidity/ni2.m;
-      state.energy = max(state.energy+energyDirection*abs(previousTarget-target)*rigidity*energyUnit,0);
+      float force = min(max(1-(distance/target), -1.7f), 1.7f);
+      ni1.vx += normX*force*rigidity/ni1.m;
+      ni1.vy += normY*force*rigidity/ni1.m;
+      ni1.vz += normZ*force*rigidity/ni1.m;
+      ni2.vx -= normX*force*rigidity/ni2.m;
+      ni2.vy -= normY*force*rigidity/ni2.m;
+      ni2.vz -= normZ*force*rigidity/ni2.m;
+      if (state != null) {
+        state.energy = max(state.energy + energyDirection * abs(previousTarget - target) * rigidity * energyUnit, 0);
+      }
       previousTarget = target;
     }
   }
   Muscle copyMuscle() {
-    return new Muscle(state, random, c1, c2, len, rigidity);
+    return new Muscle(random, c1, c2, len, rigidity);
   }
   Muscle modifyMuscle(int nodeNum, float mutability) {
     int newc1 = c1;
@@ -75,7 +77,7 @@ public class Muscle {
     float newR = min(max(rigidity*(1+ Utils.r(random)*0.9f*mutability),0.015f),0.06f);
     float newLen = min(max(len+Utils.r(random)*mutability,0.4f),1.25f);
 
-    return new Muscle(state, random, newc1, newc2, newLen, newR);
+    return new Muscle(random, newc1, newc2, newLen, newR);
   }
   void drawMuscle(ArrayList<Node> n, PGraphics img) {
     Node ni1 = n.get(c1);
