@@ -77,7 +77,7 @@ public class EvolutionSteer extends PApplet {
 
   float CAMERA_MOVE_SPEED = 0.03f;
 
-  int menu = 0;
+  Menu menu = Menu.WELCOME;
   int gen = -1;
 
   int genSelected = 0;
@@ -106,7 +106,7 @@ public class EvolutionSteer extends PApplet {
   @Override
   public void mouseWheel(MouseEvent event) {
     float delta = Math.signum(event.getCount());
-    if (menu == 5 || statusWindow >= -3) {
+    if (menu == Menu.RENDERING_SIMULATION || statusWindow >= -3) {
       if (delta == -1) {
         state.zoomOut();
         textFont(font, postFontSize);
@@ -123,7 +123,7 @@ public class EvolutionSteer extends PApplet {
     }
     float mX = mouseX/windowSizeMultiplier;
     float mY = mouseY/windowSizeMultiplier;
-    if (menu == 1 && gen >= 1 && abs(mY-365) <= 25 && abs(mX-sliderX-25) <= 25) {
+    if (menu == Menu.MAIN_MENU && gen >= 1 && abs(mY-365) <= 25 && abs(mX-sliderX-25) <= 25) {
       drag = true;
     }
   }
@@ -145,22 +145,15 @@ public class EvolutionSteer extends PApplet {
       creatureWatching = id;
     }
   }
-  void setMenu(int m) {
+  void setMenu(Menu m) {
     menu = m;
-    if (m == 1) {
+    if (m == Menu.MAIN_MENU) {
       renderMain.drawGraph(gen, 975, 570);
     }
   }
-  String zeros(int n, int zeros){
-    String s = n+"";
-    for(int i = s.length(); i < zeros; i++){
-      s = "0"+s;
-    }
-    return s;
-  }
 
   void startASAP() {
-    setMenu(4);
+    setMenu(Menu.MAIN_MENU_SIMULATING);
     creaturesTested = 0;
     stepbystep = false;
     stepbystepslow = false;
@@ -171,20 +164,20 @@ public class EvolutionSteer extends PApplet {
     miniSimulation = false;
     float mX = mouseX/windowSizeMultiplier;
     float mY = mouseY/windowSizeMultiplier;
-    if (menu == 0 && abs(mX-windowWidth/2) <= 200 && abs(mY-400) <= 100) {
-      setMenu(1);
-    }else if (menu == 1 && gen == -1 && abs(mX-120) <= 100 && abs(mY-300) <= 50) {
-      setMenu(2);
-    }else if (menu == 1 && gen >= 0 && abs(mX-990) <= 230) {
+    if (menu == Menu.WELCOME && abs(mX-windowWidth/2) <= 200 && abs(mY-400) <= 100) {
+      setMenu(Menu.MAIN_MENU);
+    }else if (menu == Menu.MAIN_MENU && gen == -1 && abs(mX-120) <= 100 && abs(mY-300) <= 50) {
+      setMenu(Menu.INIT_NEW_CREATURES);
+    }else if (menu == Menu.MAIN_MENU && gen >= 0 && abs(mX-990) <= 230) {
       if (abs(mY-40) <= 20) {
-        setMenu(4);
+        setMenu(Menu.MAIN_MENU_SIMULATING);
         simulationSpeed = 1;
         creaturesTested = 0;
         stepbystep = true;
         stepbystepslow = true;
       }
       if (abs(mY-90) <= 20) {
-        setMenu(4);
+        setMenu(Menu.MAIN_MENU_SIMULATING);
         creaturesTested = 0;
         stepbystep = true;
         stepbystepslow = false;
@@ -197,12 +190,12 @@ public class EvolutionSteer extends PApplet {
         }
         startASAP();
       }
-    }else if (menu == 3 && abs(mX-1030) <= 130 && abs(mY-684) <= 20) {
+    }else if (menu == Menu.MENU_3 && abs(mX-1030) <= 130 && abs(mY-684) <= 20) {
       gen = 0;
-      setMenu(1);
-    } else if (menu == 7 && abs(mX-1030) <= 130 && abs(mY-684) <= 20) {
-      setMenu(8);
-    } else if((menu == 5 || menu == 4) && mY >= windowHeight-40){
+      setMenu(Menu.MAIN_MENU);
+    } else if (menu == Menu.MENU_7 && abs(mX-1030) <= 130 && abs(mY-684) <= 20) {
+      setMenu(Menu.ALL_CREATURES_SORT_ANIMATION);
+    } else if((menu == Menu.RENDERING_SIMULATION || menu == Menu.MAIN_MENU_SIMULATING) && mY >= windowHeight-40){
       if(mX < 90){
         for (int s = state.timer; s < 900; s++) {
           state.simulateCurrentCreature();
@@ -226,16 +219,16 @@ public class EvolutionSteer extends PApplet {
           state.setAverages();
           state.setFitness(creatureArray, i);
         }
-        setMenu(6);
+        setMenu(Menu.SORT_CREATURES_AFTER_SIMULATION);
       }
-    } else if(menu == 8 && mX < 90 && mY >= windowHeight-40){
+    } else if(menu == Menu.ALL_CREATURES_SORT_ANIMATION && mX < 90 && mY >= windowHeight-40){
       state.timer = 100000;
-    } else if (menu == 9 && abs(mX-1030) <= 130 && abs(mY-690) <= 20) {
-      setMenu(10);
-    }else if (menu == 11 && abs(mX-1130) <= 80 && abs(mY-690) <= 20) {
-      setMenu(12);
-    }else if (menu == 13 && abs(mX-1130) <= 80 && abs(mY-690) <= 20) {
-      setMenu(1);
+    } else if (menu == Menu.MENU_9 && abs(mX-1030) <= 130 && abs(mY-690) <= 20) {
+      setMenu(Menu.KILL_HALF);
+    }else if (menu == Menu.MENU_11 && abs(mX-1130) <= 80 && abs(mY-690) <= 20) {
+      setMenu(Menu.CREATE_OFFSPRINGS);
+    }else if (menu == Menu.MENU_13 && abs(mX-1130) <= 80 && abs(mY-690) <= 20) {
+      setMenu(Menu.MAIN_MENU);
     }
   }
 
@@ -279,9 +272,9 @@ public class EvolutionSteer extends PApplet {
   @Override
   public void draw() {
     scale(windowSizeMultiplier);
-    if (menu == 0) {
+    if (menu == Menu.WELCOME) {
       renderMenu.renderWelcomeMenu();
-    }else if (menu == 1) {
+    }else if (menu == Menu.MAIN_MENU) {
       renderMenu.renderMainMenu(gen, genSelected, gensToDo);
       if (gensToDo >= 1) {
         gensToDo--;
@@ -289,7 +282,7 @@ public class EvolutionSteer extends PApplet {
           startASAP();
         }
       }
-    }else if (menu == 2) {
+    }else if (menu == Menu.INIT_NEW_CREATURES) {
       Random rnd = new Random(SEED);
       for (int y = 0; y < 25; y++) {
         for (int x = 0; x < 40; x++) {
@@ -302,8 +295,8 @@ public class EvolutionSteer extends PApplet {
                     0, 0, 0, 0.4f, random(0, 1))); //replaced all nodes' sizes with 0.4, used to be random(0.1,1), random(0,1)
           }
           for (int i = 0; i < muscleNum; i++) {
-            int tc1 = 0;
-            int tc2 = 0;
+            int tc1;
+            int tc2;
             if (i < nodeNum-1) {
               tc1 = i;
               tc2 = i+1;
@@ -313,10 +306,6 @@ public class EvolutionSteer extends PApplet {
               while (tc2 == tc1) {
                 tc2 = (int)(random(0, nodeNum));
               }
-            }
-            float s = 0.8f;
-            if (i >= 10) {
-              s *= 1.414;
             }
             float len = random(0.5f,1.5f);
             m.add(new Muscle(state, new Random(rnd.nextInt()), tc1, tc2, len, random(0.015f, 0.06f)));
@@ -330,18 +319,18 @@ public class EvolutionSteer extends PApplet {
         }
       }
       renderMenu.renderNew1000CreaturesMenu();
-      setMenu(3);
-    }else if(menu == 3){
+      setMenu(Menu.MENU_3);
+    }else if(menu == Menu.MENU_3){
       renderMenu.renderMenu3();
-    }else if (menu == 4) {
+    }else if (menu == Menu.MAIN_MENU_SIMULATING) {
       state.resetState(creatureArray[creaturesTested]);
-      setMenu(5);
+      setMenu(Menu.RENDERING_SIMULATION);
       if (!stepbystepslow) {
         simulateSingleGeneration();
-        setMenu(6);
+        setMenu(Menu.SORT_CREATURES_AFTER_SIMULATION);
       }
     }
-    if (menu == 5) {
+    if (menu == Menu.RENDERING_SIMULATION) {
       boolean simulating = state.timer <= 900;
       if (simulating) {
         keysToMoveCamera();
@@ -365,10 +354,10 @@ public class EvolutionSteer extends PApplet {
         state.setFitness(creatureArray, creaturesTested);
       }
       if (state.timer >= 1020) {
-        setMenu(4);
+        setMenu(Menu.MAIN_MENU_SIMULATING);
         creaturesTested++;
         if (creaturesTested == 1000) {
-          setMenu(6);
+          setMenu(Menu.SORT_CREATURES_AFTER_SIMULATION);
         }
         state.camX = 0;
       }
@@ -376,31 +365,31 @@ public class EvolutionSteer extends PApplet {
         state.timer += simulationSpeed;
       }
     }
-    if (menu == 6) {
+    if (menu == Menu.SORT_CREATURES_AFTER_SIMULATION) {
       renderMenu.renderMenu6(gen);
       if (stepbystep) {
         renderMain.drawScreenImage(creatureArray, creatureList, creaturesInPosition, gen, 0, renderMenu.gridBGColor);
-        setMenu(7);
+        setMenu(Menu.MENU_7);
       } else {
-        setMenu(10);
+        setMenu(Menu.KILL_HALF);
       }
     }
-    if (menu == 8) {
-      renderMenu.renderAllCreaturesMenu(gen);
+    if (menu == Menu.ALL_CREATURES_SORT_ANIMATION) {
+      renderMenu.renderAllCreaturesSortAnimation(gen);
       if (state.timer > 60*PI) {
         renderMain.drawScreenImage(creatureArray, creatureList, creaturesInPosition, gen, 1, renderMenu.gridBGColor);
-        setMenu(9);
+        setMenu(Menu.MENU_9);
       }
     }
     float mX = mouseX/windowSizeMultiplier;
     float mY = mouseY/windowSizeMultiplier;
     prevStatusWindow = statusWindow;
-    if (abs(menu-9) <= 2 && gensToDo == 0 && !drag) {
+    if (menu.condition2() && gensToDo == 0 && !drag) {
       if (abs(mX-639.5f) <= 599.5) {
-        if (menu == 7 && abs(mY-329) <= 312) {
+        if (menu == Menu.MENU_7 && abs(mY-329) <= 312) {
           statusWindow = creaturesInPosition[floor((mX-40)/30)+floor((mY-17)/25)*40];
         }
-        else if (menu >= 9 && abs(mY-354) <= 312) {
+        else if (menu.condition3() && abs(mY-354) <= 312) {
           statusWindow = floor((mX-40)/30)+floor((mY-42)/25)*40;
         }
         else {
@@ -410,7 +399,7 @@ public class EvolutionSteer extends PApplet {
       else {
         statusWindow = -4;
       }
-    } else if (menu == 1 && genSelected >= 1 && gensToDo == 0 && !drag) {
+    } else if (menu == Menu.MAIN_MENU && genSelected >= 1 && gensToDo == 0 && !drag) {
       statusWindow = -4;
       if (abs(mY-250) <= 70) {
         if (abs(mX-990) <= 230) {
@@ -423,7 +412,7 @@ public class EvolutionSteer extends PApplet {
     } else {
       statusWindow = -4;
     }
-    if (menu == 10) {
+    if (menu == Menu.KILL_HALF) {
       //Kill!
       for (int j = 0; j < 500; j++) {
         if(random(0,1) < getSB(gen)){
@@ -449,12 +438,12 @@ public class EvolutionSteer extends PApplet {
       }
       if (stepbystep) {
         renderMain.drawScreenImage(creatureArray, creatureList, creaturesInPosition, gen, 2, renderMenu.gridBGColor);
-        setMenu(11);
+        setMenu(Menu.MENU_11);
       } else {
-        setMenu(12);
+        setMenu(Menu.CREATE_OFFSPRINGS);
       }
     }
-    if (menu == 12) {
+    if (menu == Menu.CREATE_OFFSPRINGS) {
       justGotBack = true;
       for (int j = 0; j < 500; j++) {
         int j2 = j;
@@ -472,15 +461,15 @@ public class EvolutionSteer extends PApplet {
       renderMain.drawScreenImage(creatureArray, creatureList, creaturesInPosition, gen, 3, renderMenu.gridBGColor);
       gen++;
       if (stepbystep) {
-        setMenu(13);
+        setMenu(Menu.MENU_13);
       } else {
-        setMenu(1);
+        setMenu(Menu.MAIN_MENU);
       }
     }
-    if(menu%2 == 1 && abs(menu-10) <= 3){
+    if(menu.condition1()){
       renderMain.renderScreenImage();
     }
-    if (menu == 1 || gensToDo >= 1) {
+    if (menu == Menu.MAIN_MENU_SIMULATING || gensToDo >= 1) {
       if (gen >= 1) {
         if (gen >= 5) {
           genSelected = round((sliderX - 760) * (gen - 1) / 410) + 1;
@@ -496,7 +485,7 @@ public class EvolutionSteer extends PApplet {
       Creature cj;
       if (statusWindow >= 0) {
         cj = creatureList.get(statusWindow);
-        if (menu == 7) {
+        if (menu == Menu.MENU_7) {
           int id = ((cj.id-1)%1000);
           x = id%40;
           y = floor(id/40);
@@ -570,11 +559,11 @@ public class EvolutionSteer extends PApplet {
   public void keyPressed(){
     if(key == 't'){
       foodAngleChange += 5.0/360.0*(2*PI);
-      setMenu(1);
+      setMenu(Menu.MAIN_MENU);
     }
     if(key == 'g'){
       foodAngleChange -= 5.0/360.0*(2*PI);
-      setMenu(1);
+      setMenu(Menu.MAIN_MENU);
     }
   }
 

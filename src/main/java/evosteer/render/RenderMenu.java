@@ -70,7 +70,7 @@ public class RenderMenu {
     p3d.background(255);
     p3d.fill(100, 200, 100);
     p3d.noStroke();
-    p3d. rect(windowWidth/2-200, 300, 400, 200);
+    p3d.rect(windowWidth/2-200, 300, 400, 200);
     p3d.fill(0);
     p3d.text("EVOLUTION!", windowWidth/2, 200);
     p3d.text("START", windowWidth/2, 430);
@@ -247,7 +247,7 @@ public class RenderMenu {
     renderMain.topSpeciesCounts.add(holder);
   }
 
-  public void renderAllCreaturesMenu(int generation) {
+  public void renderAllCreaturesSortAnimation(int generation) {
     state.timer = 100000; // DOY IM IMPATIENT
 
     PGraphics screenImage = renderMain.screenImage;
